@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -11,7 +12,8 @@ class TaskController extends Controller
      */
     public function index()
     {
-        //
+        $task = Auth::user()->tasks()->get();
+        return view('tasks.index', compact('task'));
     }
 
     /**
@@ -19,7 +21,7 @@ class TaskController extends Controller
      */
     public function create()
     {
-        //
+        return view('tasks.create');
     }
 
     /**
@@ -27,7 +29,20 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:50',
+            'description' => 'required|string|max:255',
+            'completed' => 'required|in:yes,no',
+            'user_id' => $request->user_id,
+        ]);
+
+        $task = Auth::user()->tasks()->create([
+            'name' => $request->get('name'),
+            'description' => $request->get('description'),
+            'completed' => $request->get('completed'),
+            'user_id' => $request->get('user_id'),
+        ]);
+        return redirect('/tasks')->with('success', 'Task created');
     }
 
     /**

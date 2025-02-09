@@ -50,7 +50,11 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $task = Auth::user()->tasks()->findOrFail($id);
+        if(!$task) {
+            return redirect('tasks.index')->with('error', 'Task not found');
+        }
+        return view('tasks.show', compact('task'));
     }
 
     /**
@@ -58,7 +62,11 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $task = Auth::user()->tasks()->findOrFail($id);
+        if(!$task) {
+            return redirect('tasks.index')->with('error', 'Task not found');
+        }
+        return view('tasks.edit', compact('task'));
     }
 
     /**
@@ -66,7 +74,16 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $task = Auth::user()->tasks()->findOrFail($id);
+       $request->validate([
+            'name' => 'required|string|max:50',
+            'description' => 'required|string|max:255',
+            'completed' => 'required|in:yes,no',
+            'user_id' => $request->user_id,
+        ]);
+       $task->update($request->all());
+
+
     }
 
     /**
@@ -74,6 +91,7 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $task = Auth::user()->tasks()->findOrFail($id);
+        $task->delete();
     }
 }

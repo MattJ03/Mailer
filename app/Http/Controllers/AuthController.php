@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Mail;
+use App\Mail\WelcomeMail;
+
 
 class AuthController extends Controller
 {
     public function register(Request $request) {
         $validatedData = $request->validate([
-            'name' = 'required|string',
+            'name' => 'required|string',
             'email' => 'required|unique:users|max:255',
             'password' => 'required|min:5|max:20'
         ]);
@@ -20,6 +22,8 @@ class AuthController extends Controller
             'email'=> $validatedData['email'],
             'password' => Hash::make('password'),
         ]);
+
         Mail::to($user->email)->send(new Mail\WelcomeMail($user));
+        return redirect('/login');
     }
 }

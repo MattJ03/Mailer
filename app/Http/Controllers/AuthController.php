@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Mail;
 use App\Mail\WelcomeMail;
+use Illuminate\Support\Facades\Auth;
 
 
 class AuthController extends Controller
@@ -23,6 +24,8 @@ class AuthController extends Controller
             'password' => Hash::make('password'),
         ]);
 
+        Auth::login($user);
+
         Mail::to($user)->send(new WelcomeMail($user->email));
 
         return redirect('/login');
@@ -35,7 +38,14 @@ class AuthController extends Controller
             'password' => 'required|min:5|max:20',
         ]);
         if(!Auth::attempt($request->only('email', 'password'))) {
-
+          return redirect('/login');
         }
+        return redirect('tasks.index');
     }
+
+    public function logout() {
+        Auth::logout();
+        return redirect('/login');
+    }
+
 }

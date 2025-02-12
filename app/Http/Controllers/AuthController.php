@@ -23,7 +23,19 @@ class AuthController extends Controller
             'password' => Hash::make('password'),
         ]);
 
-        Mail::to($user->email)->send(new Mail\WelcomeMail($user));
+        Mail::to($user)->send(new WelcomeMail($user->email));
+
         return redirect('/login');
+    }
+
+    public function login(Request $request) {
+
+        $request->validate([
+            'email' => 'required|unique:users|max:255',
+            'password' => 'required|min:5|max:20',
+        ]);
+        if(!Auth::attempt($request->only('email', 'password'))) {
+
+        }
     }
 }

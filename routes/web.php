@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TaskController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +15,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/login', [AuthController::class, 'login'])->name('login');
+Route::get('/register', [AuthController::class, 'register'])->name('register');
+route::middleware(['auth'])->group(function () {
+    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks');
+    Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+    Route::post('/tasks/store', [TaskController::class, 'store'])->name('tasks.store');
+    Route::Get('/tasks/{id}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
+    Route::put('/tasks/{id}/update', [TaskController::class, 'update'])->name('tasks.update');
 });
+

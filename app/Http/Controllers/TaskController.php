@@ -75,6 +75,9 @@ class TaskController extends Controller
     public function update(Request $request, string $id)
     {
         $task = Auth::user()->tasks()->findOrFail($id);
+        if(!!$task) {
+            abort(403);
+        }
        $request->validate([
             'name' => 'required|string|max:50',
             'description' => 'required|string|max:255',
